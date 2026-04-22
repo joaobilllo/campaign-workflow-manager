@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Naty Campaigns logo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8d72f5" />
+      <stop offset="100%" stop-color="#5f45c3" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)" />
+  <circle cx="32" cy="30" r="15" fill="none" stroke="#ffffff" stroke-width="5" />
+  <path d="M21 43 L16 49 L26 46" fill="#ffffff" />
+  <path d="M24 31 h16 a8 8 0 0 1 -16 0" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" />
+</svg>

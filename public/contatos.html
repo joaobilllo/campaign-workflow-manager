@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contatos - Naty Campaigns</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Chakra+Petch:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="contacts-page">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="dot"></span>
+          <div>
+            <strong>Naty Campaigns</strong>
+            <small>v2.0 local</small>
+          </div>
+        </div>
+        <nav class="menu">
+          <a href="integration.html" class="item" data-page="integration">Integracoes</a>
+          <a href="campaign.html" class="item" data-page="campaign">Campanha</a>
+          <a href="contatos.html" class="item" data-page="contatos">Contatos</a>
+          <a href="routes.html" class="item" data-page="routes">Rotas</a>
+          <a href="logs.html" class="item" data-page="logs">Logs</a>
+        </nav>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar card">
+          <div>
+            <h1>Contatos</h1>
+            <p>Consulta de contatos diretamente no PostgreSQL para uso em campanhas.</p>
+          </div>
+        </header>
+
+        <section class="card form-card">
+          <section class="block">
+            <h2>Consulta SQL</h2>
+            <div class="grid two">
+              <label>
+                Segmento
+                <input type="text" id="contactsSegment" value="recic" placeholder="Ex.: recic" />
+              </label>
+              <label>
+                Limite
+                <input type="number" id="contactsLimit" value="500" min="1" max="5000" step="1" />
+              </label>
+            </div>
+            <div class="form-actions contacts-actions">
+              <button type="button" id="checkDbBtn" class="inline-btn">Testar conexao</button>
+              <button type="button" id="loadContactsBtn">Buscar contatos</button>
+            </div>
+            <p class="route-meta" id="contactsMeta">Nenhuma consulta realizada.</p>
+          </section>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Numero</th>
+                  <th>Segmento</th>
+                  <th>Avaliacao</th>
+                  <th>Localidade</th>
+                  <th>URL Google</th>
+                </tr>
+              </thead>
+              <tbody id="contactsTableBody">
+                <tr>
+                  <td colspan="6" class="empty">Nenhuma consulta realizada ainda.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card result-card">
+          <div class="result-title">
+            <h2>Resposta da consulta</h2>
+            <span class="status-dot"></span>
+          </div>
+          <pre id="contactsResult">Aguardando consulta...</pre>
+        </section>
+      </main>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="contatos.js"></script>
+  </body>
+</html>

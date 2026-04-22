@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Integracoes - Naty Campaigns</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Chakra+Petch:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="dot"></span>
+          <div>
+            <strong>Naty Campaigns</strong>
+            <small>v2.0 local</small>
+          </div>
+        </div>
+        <nav class="menu">
+          <a href="integration.html" class="item" data-page="integration">Integracoes</a>
+          <a href="campaign.html" class="item" data-page="campaign">Campanha</a>
+          <a href="contatos.html" class="item" data-page="contatos">Contatos</a>
+          <a href="routes.html" class="item" data-page="routes">Rotas</a>
+          <a href="logs.html" class="item" data-page="logs">Logs</a>
+        </nav>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar card">
+          <div>
+            <h1>Integracoes</h1>
+            <p>Configure URL, token e credenciais que mudam com frequencia.</p>
+          </div>
+        </header>
+
+        <form id="integrationForm" class="card form-card">
+          <section class="block">
+            <h2>Naty API</h2>
+            <div class="grid two">
+              <label>
+                URL da Naty
+                <input type="url" name="natyUrl" value="https://api.staging.naty.app" required />
+              </label>
+              <label>
+                Token da Naty
+                <input
+                  id="token-naty"
+                  type="text"
+                  name="natyToken"
+                  placeholder="Cole seu token JWT (com ou sem Bearer)"
+                  required
+                />
+              </label>
+            </div>
+          </section>
+
+          <section class="block">
+            <h2>Evolution API</h2>
+            <div class="grid two">
+              <label>
+                URL Evolution
+                <input type="url" name="evolutionUrl" value="http://192.168.1.16:8080" required />
+              </label>
+              <label>
+                Instance Evolution
+                <input type="text" name="evolutionInstance" placeholder="nome-da-instance" required />
+              </label>
+              <label>
+                API Key Evolution
+                <input type="text" name="evolutionApiKey" placeholder="ex.: BQYHJGJHJ" />
+              </label>
+            </div>
+
+            <section class="checklist">
+              <label>
+                <input type="checkbox" name="validateOnEvolution" checked />
+                Validar numeros na Evolution antes de enviar campanha
+              </label>
+              <label>
+                <input type="checkbox" name="onlyCsvValidated" checked />
+                Considerar apenas contatos com validated_whatsapp = true
+              </label>
+            </section>
+          </section>
+
+          <div class="form-actions">
+            <button type="submit" id="saveBtn">Salvar integracoes</button>
+          </div>
+        </form>
+
+        <section class="card result-card">
+          <div class="result-title">
+            <h2>Status</h2>
+            <span class="status-dot"></span>
+          </div>
+          <pre id="integrationStatus">Nenhuma configuracao salva ainda.</pre>
+        </section>
+      </main>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="integration.js"></script>
+  </body>
+</html>

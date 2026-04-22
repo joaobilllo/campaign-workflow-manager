@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campanha - Naty Campaigns</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Chakra+Petch:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="campaign-page">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="dot"></span>
+          <div>
+            <strong>Naty Campaigns</strong>
+            <small>v2.0 local</small>
+          </div>
+        </div>
+        <nav class="menu">
+          <a href="integration.html" class="item" data-page="integration">Integracoes</a>
+          <a href="campaign.html" class="item" data-page="campaign">Campanha</a>
+          <a href="contatos.html" class="item" data-page="contatos">Contatos</a>
+          <a href="routes.html" class="item" data-page="routes">Rotas</a>
+          <a href="logs.html" class="item" data-page="logs">Logs</a>
+        </nav>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar card">
+          <div>
+            <h1>Campanha</h1>
+            <p>Configure os parametros e contatos para disparo.</p>
+          </div>
+        </header>
+
+        <form id="campaignForm" class="campaign-form">
+          <section class="card form-card campaign-section-card">
+            <h2>Parametros Da Campanha</h2>
+            <div class="grid two campaign-params-grid">
+              <label>
+                Nome da campanha
+                <input type="text" name="campaignName" placeholder="Joao - 001 - Monitoramento/Alarmes" required />
+              </label>
+              <label>
+                channelId
+                <select name="channelId" id="channelIdSelect" class="route-dropdown" required>
+                  <option value="">Carregando canais...</option>
+                </select>
+              </label>
+              <label>
+                queueId
+                <select name="queueId" id="queueIdSelect" class="route-dropdown" required>
+                  <option value="">Carregando filas...</option>
+                </select>
+              </label>
+              <label>
+                ticketStatus
+                <select name="ticketStatus">
+                  <option value="closed" selected>closed</option>
+                  <option value="open">open</option>
+                  <option value="pending">pending</option>
+                </select>
+              </label>
+              <label>
+                minMsgInterval (ms)
+                <input type="number" name="minMsgInterval" value="120000" min="0" step="1000" required />
+              </label>
+              <label>
+                maxMsgInterval (ms)
+                <input type="number" name="maxMsgInterval" value="140000" min="0" step="1000" required />
+              </label>
+              <label>
+                Nome padrao do contato
+                <input type="text" name="contactDefaultName" value="Contato" required />
+              </label>
+
+              <label class="campaign-add-message-field">
+                Adicionar mensagem
+                <div class="inline-action">
+                  <input
+                    type="text"
+                    id="newMessageInput"
+                    placeholder="Digite uma mensagem e clique em adicionar"
+                  />
+                  <button type="button" id="addMessageBtn" class="inline-btn">Adicionar</button>
+                </div>
+              </label>
+            </div>
+
+            <section class="checklist media-toggle-checklist">
+              <label>
+                <input type="checkbox" name="enableMedia" id="enableMediaCheckbox" />
+                Campanha com midia
+              </label>
+            </section>
+
+            <section class="media-config-wrap hidden-media-fields" id="mediaConfigWrap">
+              <div class="grid media-config-grid">
+                <label>
+                  Tipo de midia
+                  <select name="mediaType" id="mediaTypeSelect">
+                    <option value="">Selecione o tipo</option>
+                    <option value="image">Imagem</option>
+                    <option value="video">Video</option>
+                    <option value="document">Documento</option>
+                  </select>
+                </label>
+
+                <div class="field-card media-fields hidden-media-fields" id="mediaKeyFieldWrap">
+                  <p class="field-card-label">Media Key da campanha</p>
+                  <input type="text" name="mediaKey" id="mediaKeyInput" placeholder="ex.: f19c35ed-...pdf" />
+                </div>
+
+                <div class="field-card media-fields hidden-media-fields" id="mediaUploadFieldWrap">
+                  <p class="field-card-label">Selecionar arquivo para gerar Media Key</p>
+                  <div class="upload-media-actions">
+                    <label class="file-drop" for="mediaFileInput">
+                      <input type="file" name="mediaFile" id="mediaFileInput" class="file-input-hidden" />
+                      <span class="file-drop-icon">⭱</span>
+                      <span class="file-drop-title">Importar arquivo de midia</span>
+                      <span class="file-drop-subtitle" id="mediaFileName">Clique para selecionar ou arraste o arquivo</span>
+                    </label>
+                    <button type="button" id="uploadMediaBtn" class="inline-btn">Gerar ID da midia</button>
+                  </div>
+                  <small>Ao gerar, o Media Key sera preenchido automaticamente.</small>
+                </div>
+              </div>
+            </section>
+          </section>
+
+          <section class="card form-card campaign-section-card">
+            <h2>Contatos</h2>
+            <div class="grid two">
+              <label>
+                Contatos manuais (um por linha: numero,nome)
+                <textarea
+                  name="manualContacts"
+                  rows="8"
+                  placeholder="558388876062,Atacadao da Seguranca&#10;5511984566252,Cliente 02"
+                ></textarea>
+              </label>
+
+              <label>
+                CSV de contatos (number,validated_whatsapp[,name])
+                <span class="file-upload-stack">
+                  <label class="file-drop" for="contactsFileInput">
+                    <input
+                      type="file"
+                      id="contactsFileInput"
+                      class="file-input-hidden"
+                      name="contactsFile"
+                      accept=".csv,text/csv"
+                    />
+                    <span class="file-drop-icon">⭱</span>
+                    <span class="file-drop-title">Importar arquivo CSV</span>
+                    <span class="file-drop-subtitle" id="contactsFileName">Clique para selecionar ou arraste o arquivo</span>
+                  </label>
+                </span>
+              </label>
+            </div>
+
+            <div class="campaign-message-actions">
+              <div class="message-panel contacts-message-panel">
+                <small>Selecione no minimo 3 mensagens para distribuir aleatoriamente na campanha.</small>
+                <details class="message-dropdown" id="messageDropdown">
+                  <summary>Selecionar mensagens</summary>
+                  <div id="messageList" class="message-list compact"></div>
+                </details>
+              </div>
+
+              <div class="form-actions campaign-contact-actions">
+                <button type="submit" id="submitBtn" class="campaign-cta-btn">Rodar campanha</button>
+              </div>
+            </div>
+          </section>
+
+        </form>
+
+        <section class="card result-card" id="resultado">
+          <div class="result-title">
+            <h2>Resultado Da Execucao</h2>
+            <span class="status-dot"></span>
+          </div>
+          <pre id="result">Aguardando envio...</pre>
+        </section>
+      </main>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="campaign.js"></script>
+  </body>
+</html>

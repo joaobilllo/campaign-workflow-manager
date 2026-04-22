@@ -1,0 +1,54 @@
+{
+  "integration": {
+    "natyUrl": "https://api.staging.naty.app",
+    "natyToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJjcmVhdGU6bWVzc2FnZXMiLCJjcmVhdGU6bWVkaWFzIiwicmVhZDp3aGF0c2FwcHMiLCJ1cGRhdGU6d2hhdHNhcHBzIiwicmVhZDpjYW1wYWlnbnMiLCJtYW5hZ2U6Y2FtcGFpZ25zIiwicmVhZDpjaGFubmVscyIsInJlYWQ6cXVldWVzIiwicmVhZDp1c2VycyJdLCJjb21wYW55SWQiOiJmZjQ1M2JlOS05MmM3LTRlZWUtYjYxNS04ZjE4OTAxMzE4NGEiLCJpYXQiOjE3NzYyNjk5NjJ9.PvS6jyVlbCGAUfN9SRZENHItR7B01eHNjjQfwcFcu9s",
+    "evolutionUrl": "http://192.168.1.16:8080",
+    "evolutionInstance": "8012",
+    "evolutionApiKey": "BQYHJGJHJ",
+    "validateOnEvolution": true,
+    "onlyCsvValidated": true,
+    "updatedAt": "2026-04-15T16:41:12.847Z"
+  },
+  "messageTemplates": [],
+  "manualRoutes": [],
+  "logs": [
+    {
+      "id": 1,
+      "createdAt": "2026-04-17T12:25:22.318Z",
+      "campaignName": "Teste",
+      "status": "erro",
+      "sentCount": 0,
+      "details": {
+        "success": false,
+        "error": "Selecione no minimo 3 mensagens para usar na campanha."
+      }
+    },
+    {
+      "id": 2,
+      "createdAt": "2026-04-17T12:25:44.656Z",
+      "campaignName": "Teste",
+      "status": "erro",
+      "sentCount": 0,
+      "details": {
+        "success": false,
+        "error": "Evolution falhou ao conectar em http://192.168.1.16:8080/chat/whatsappNumbers/8012. Detalhes: Connect Timeout Error (attempted address: 192.168.1.16:8080, timeout: 10000ms) | fetch failed"
+      }
+    },
+    {
+      "id": 3,
+      "createdAt": "2026-04-17T12:26:38.923Z",
+      "campaignName": "Teste",
+      "status": "erro",
+      "sentCount": 0,
+      "details": {
+        "success": false,
+        "error": "Evolution falhou ao conectar em http://192.168.1.16:8080/chat/whatsappNumbers/8012. Detalhes: Connect Timeout Error (attempted address: 192.168.1.16:8080, timeout: 10000ms) | fetch failed"
+      }
+    }
+  ],
+  "counters": {
+    "messageTemplate": 12,
+    "manualRoute": 0,
+    "log": 3
+  }
+}

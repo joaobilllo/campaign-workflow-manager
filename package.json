@@ -1,0 +1,20 @@
+{
+  "name": "projetinho-rodar-campanhas",
+  "version": "1.0.0",
+  "description": "Ferramenta para validar numeros na Evolution e disparar campanhas na Naty",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.13.1"
+  }
+}

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rotas - Naty Campaigns</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Chakra+Petch:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="routes-page">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="dot"></span>
+          <div>
+            <strong>Naty Campaigns</strong>
+            <small>v2.0 local</small>
+          </div>
+        </div>
+        <nav class="menu">
+          <a href="integration.html" class="item" data-page="integration">Integracoes</a>
+          <a href="campaign.html" class="item" data-page="campaign">Campanha</a>
+          <a href="contatos.html" class="item" data-page="contatos">Contatos</a>
+          <a href="routes.html" class="item" data-page="routes">Rotas</a>
+          <a href="logs.html" class="item" data-page="logs">Logs</a>
+        </nav>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar card">
+          <div>
+            <h1>Rotas</h1>
+            <p>Central para consultar endpoints auxiliares da API antes de rodar campanhas.</p>
+          </div>
+          <button type="button" id="openManualRouteBtn" class="topbar-minimal-btn">+ Rota Manual</button>
+        </header>
+
+        <section class="card form-card">
+          <section id="manualRouteEditorWrap" class="block manual-route-editor hidden-manual-route-editor">
+            <h2>Rota Manual</h2>
+            <form id="manualRouteForm" class="grid two">
+              <input type="hidden" id="manualRouteId" />
+              <label>
+                Nome da rota
+                <input type="text" id="manualRouteName" placeholder="Ex.: Buscar contatos" required />
+              </label>
+              <label>
+                Metodo
+                <select id="manualRouteMethod" required>
+                  <option value="GET">GET</option>
+                  <option value="POST">POST</option>
+                  <option value="PUT">PUT</option>
+                  <option value="PATCH">PATCH</option>
+                  <option value="DELETE">DELETE</option>
+                </select>
+              </label>
+              <label>
+                Path
+                <input type="text" id="manualRoutePath" placeholder="/api/v2/novo-endpoint" required />
+              </label>
+              <label>
+                Descricao
+                <input type="text" id="manualRouteDescription" placeholder="Opcional" />
+              </label>
+              <div class="form-actions manual-route-actions">
+                <button type="submit" id="saveManualRouteBtn">Salvar rota</button>
+                <button type="button" id="cancelManualRouteBtn" class="inline-btn">Cancelar</button>
+              </div>
+            </form>
+          </section>
+
+          <div id="manualRoutesList" class="manual-routes-list"></div>
+
+          <section class="block">
+            <h2>Naty - Filas</h2>
+            <p class="route-text">Rota: <strong>GET /api/v2/queues</strong></p>
+            <div class="form-actions">
+              <button type="button" id="fetchQueuesBtn">Consultar filas</button>
+            </div>
+            <p class="route-meta" id="queuesMeta">Nenhuma consulta feita.</p>
+          </section>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Queue ID</th>
+                  <th>Nome</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="queuesTableBody">
+                <tr>
+                  <td colspan="3" class="empty">Nenhuma consulta realizada ainda.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <section class="block">
+            <h2>Naty - Canais</h2>
+            <p class="route-text">Rota: <strong>GET /api/v2/channels</strong></p>
+            <div class="form-actions">
+              <button type="button" id="fetchChannelsBtn">Consultar canais</button>
+            </div>
+            <p class="route-meta" id="channelsMeta">Nenhuma consulta feita.</p>
+          </section>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Channel ID</th>
+                  <th>Nome</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="channelsTableBody">
+                <tr>
+                  <td colspan="3" class="empty">Nenhuma consulta realizada ainda.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card result-card">
+          <div class="result-title">
+            <h2>Resposta da rota</h2>
+            <span class="status-dot"></span>
+          </div>
+          <pre id="routesResult">Aguardando consulta...</pre>
+        </section>
+      </main>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="routes.js"></script>
+  </body>
+</html>
