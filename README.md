@@ -1,110 +1,88 @@
-# Projetinho Rodar Campanhas
+# Campaign Workflow Manager
 
-Aplicacao local para:
+Aplicacao web para montar e enviar campanhas de mensagem a partir de contatos digitados manualmente ou importados por CSV, com suporte de validacao via Evolution API e envio para a API da Naty.
 
-1. Receber dados da campanha via formulario.
-2. Receber contatos por CSV e/ou texto manual.
-3. Validar numeros na Evolution API.
-4. Enviar campanha pronta para a rota da Naty.
+## O que este projeto faz
 
-## Como rodar
+- Configura integracoes (Naty e Evolution) por interface web.
+- Recebe contatos por texto livre e arquivo CSV.
+- Remove contatos duplicados antes do envio.
+- Permite validacao opcional de numeros no WhatsApp.
+- Dispara campanhas para a rota de mensagens da Naty.
+- Mantem historico local de templates e logs.
 
-Requisitos:
+## Stack
 
-- Node.js 18+
+- Node.js
+- Express
+- Front-end estatico (HTML, CSS e JavaScript)
+- Persistencia local em arquivo JSON
 
-Comandos:
+## Como executar localmente
+
+Pre-requisitos:
+
+- Node.js 18 ou superior
+
+Instalacao e execucao:
 
 ```bash
 npm install
-npm run start
+npm start
 ```
 
-Abrir no navegador:
+Acesse no navegador:
 
 ```text
 http://localhost:3000
 ```
 
-Paginas:
+## Paginas da aplicacao
 
-- `http://localhost:3000/integration.html` (token, URLs, instance, opcoes de validacao)
-- `http://localhost:3000/campaign.html` (parametros da campanha e contatos)
-- `http://localhost:3000/routes.html` (consultas de rotas auxiliares como queues/channels)
-- `http://localhost:3000/logs.html` (historico de execucoes)
+- /integration.html: configuracao de URLs, token, instance e parametros de validacao
+- /campaign.html: configuracao da campanha e envio de contatos
+- /routes.html: consulta de rotas auxiliares (queues e channels)
+- /logs.html: historico de execucoes
 
-## Banco local (persistencia)
+## Persistencia local
 
-Agora o sistema persiste dados em banco local de arquivo JSON:
+Os dados sao salvos em:
 
-- Arquivo: `data/app-db.json`
-- Itens salvos: integracoes, mensagens cadastradas e logs
+- data/app-db.json
 
-APIs locais de persistencia:
+Colecoes persistidas:
 
-- `GET/PUT /api/settings/integration`
-- `GET/POST/DELETE /api/message-templates`
-- `GET/POST/DELETE /api/logs`
+- Configuracao de integracao
+- Templates de mensagem
+- Logs de execucao
 
-## Campos do formulario
+Endpoints locais:
 
-Configuracao:
+- GET e PUT /api/settings/integration
+- GET, POST e DELETE /api/message-templates
+- GET, POST e DELETE /api/logs
 
-- URL da Naty (ex.: https://api.beta.naty.app/)
-- Token da Naty
-- URL Evolution (ex.: http://192.168.1.16:8080)
-- Instance Evolution
-- API Key Evolution
+## Formato dos contatos
 
-Campanha:
+Entrada manual:
 
-- name
-- chanellId
-- queueId
-- ticketStatus
-- minMsgInterval
-- maxMsgInterval
-- messageBody
+- Uma linha por contato no formato: numero,nome
 
-Contatos:
+Entrada CSV:
 
-- Texto manual: `numero,nome` (1 por linha)
-- CSV com cabecalho: `number,validated_whatsapp` (opcionalmente `name`)
+- Cabecalho minimo: number,validated_whatsapp
+- Campo opcional: name
 
-## Fluxo interno
+## Fluxo de envio
 
-1. Junta contatos manuais e CSV.
-2. Remove duplicados.
-3. (Opcional) Filtra por `validated_whatsapp = true`.
-4. (Opcional) Chama Evolution em:
-
-```text
-/chat/whatsappNumbers/{instance}
-```
-
-5. Monta payload:
-
-```json
-{
-  "name": "...",
-  "chanellId": "...",
-  "queueId": "...",
-  "ticketStatus": "closed",
-  "minMsgInterval": 120000,
-  "maxMsgInterval": 140000,
-  "messages": [
-    { "number": "55...", "name": "Contato", "body": "Ola" }
-  ]
-}
-```
-
-6. Envia para:
-
-```text
-/api/v2/messages
-```
+1. Consolida contatos manuais e CSV.
+2. Remove duplicidades.
+3. Aplica filtro opcional por validated_whatsapp.
+4. Faz validacao opcional na Evolution (/chat/whatsappNumbers/{instance}).
+5. Monta o payload da campanha.
+6. Envia para a Naty em /api/v2/messages.
 
 ## Observacoes
 
-- Os tokens e chaves ficam no envio do formulario e nao ficam gravados em arquivo.
-- Se preferir, voce pode criar um `.env` depois para defaults internos.
+- Tokens e chaves sao enviados no formulario e nao sao persistidos em arquivo local.
+- A aplicacao foi desenhada para uso operacional interno, com setup simples e rapido.
