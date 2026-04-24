@@ -139,6 +139,32 @@
             <h2>Contatos</h2>
             <div class="grid two">
               <label>
+                Ramo (segmento no banco)
+                <input type="text" id="campaignDbSegment" value="recic" placeholder="Ex.: recic" />
+              </label>
+              <label>
+                Quantidade maxima
+                <input type="number" id="campaignDbLimit" value="200" min="1" max="5000" step="1" />
+              </label>
+            </div>
+
+            <div class="form-actions contacts-actions">
+              <button type="button" id="loadDbValidatedContactsBtn" class="inline-btn">Buscar no banco e validar na Evolution</button>
+            </div>
+
+            <label>
+              Contatos validados (apenas visualizacao)
+              <textarea
+                id="dbValidatedContactsPreview"
+                rows="5"
+                placeholder="Nenhum contato validado carregado ainda."
+                readonly
+              ></textarea>
+              <small id="dbValidatedContactsMeta">Nenhum contato validado carregado.</small>
+            </label>
+
+            <div class="grid two">
+              <label>
                 Contatos manuais (um por linha: numero,nome)
                 <textarea
                   name="manualContacts"

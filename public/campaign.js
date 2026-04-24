@@ -17,8 +17,26 @@ const mediaKeyFieldWrap = document.getElementById("mediaKeyFieldWrap");
 const mediaUploadFieldWrap = document.getElementById("mediaUploadFieldWrap");
 const channelIdSelect = document.getElementById("channelIdSelect");
 const queueIdSelect = document.getElementById("queueIdSelect");
+const campaignDbSegmentInput = document.getElementById("campaignDbSegment");
+const campaignDbLimitInput = document.getElementById("campaignDbLimit");
+const loadDbValidatedContactsBtn = document.getElementById("loadDbValidatedContactsBtn");
+const dbValidatedContactsPreview = document.getElementById("dbValidatedContactsPreview");
+const dbValidatedContactsMeta = document.getElementById("dbValidatedContactsMeta");
 
 let messageTemplates = [];
+let dbValidatedContacts = [];
+
+function updateCampaignSubmitAvailability() {
+  if (!submitButton) {
+    return;
+  }
+
+  const hasValidatedContacts = Array.isArray(dbValidatedContacts) && dbValidatedContacts.length > 0;
+  submitButton.disabled = !hasValidatedContacts;
+  submitButton.title = hasValidatedContacts
+    ? ""
+    : "Busque e valide os contatos no banco antes de rodar a campanha.";
+}
 
 function normalizeEntityId(entity, fallbackKeys = []) {
   const keys = ["id", ...fallbackKeys];
@@ -230,6 +248,91 @@ function parseManualContacts(text) {
     .filter((contact) => Boolean(contact.number));
 }
 
+function parsePositiveInt(value, fallback = 500, min = 1, max = 5000) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+
+  return Math.min(Math.max(Math.floor(parsed), min), max);
+}
+
+function readDbFilters() {
+  const segment = String((campaignDbSegmentInput && campaignDbSegmentInput.value) || "recic").trim() || "recic";
+  const limit = parsePositiveInt(campaignDbLimitInput && campaignDbLimitInput.value, 200, 1, 5000);
+  return { segment, limit };
+}
+
+function renderDbValidatedContactsPreview() {
+  if (!dbValidatedContactsPreview) {
+    return;
+  }
+
+  if (!Array.isArray(dbValidatedContacts) || !dbValidatedContacts.length) {
+    dbValidatedContactsPreview.value = "";
+    if (dbValidatedContactsMeta) {
+      dbValidatedContactsMeta.textContent = "Nenhum contato validado carregado.";
+    }
+    updateCampaignSubmitAvailability();
+    return;
+  }
+
+  dbValidatedContactsPreview.value = dbValidatedContacts
+    .map((contact) => `${contact.number},${contact.name || ""}`)
+    .join("\n");
+
+  if (dbValidatedContactsMeta) {
+    dbValidatedContactsMeta.textContent = `${dbValidatedContacts.length} contato(s) validados e prontos para campanha.`;
+  }
+
+  updateCampaignSubmitAvailability();
+}
+
+async function loadValidatedContactsForCampaign() {
+  const { segment, limit } = readDbFilters();
+
+  try {
+    const integration = await withGlobalLoading(
+      () => getIntegrationConfig(),
+      "Carregando configuracoes para validar contatos..."
+    );
+
+    if (!integration.evolutionUrl || !integration.evolutionInstance) {
+      throw {
+        success: false,
+        error: "Configure Evolution URL e Instance na pagina Integracoes antes de buscar contatos validados."
+      };
+    }
+
+    const data = await withGlobalLoading(
+      () => apiRequest("/api/campaign/contacts-from-db", {
+        method: "POST",
+        body: JSON.stringify({
+          filters: { segment, limit },
+          config: integration
+        })
+      }),
+      "Buscando contatos no banco e validando na Evolution..."
+    );
+
+    dbValidatedContacts = (data.contacts || []).map((contact) => ({
+      number: String(contact.number || "").replace(/\D/g, ""),
+      name: String(contact.name || "").trim(),
+      validatedWhatsapp: true
+    })).filter((contact) => Boolean(contact.number));
+
+    renderDbValidatedContactsPreview();
+    showResult(data, false);
+
+    notify(`${dbValidatedContacts.length} contato(s) validado(s) para campanha.`, "success");
+  } catch (error) {
+    dbValidatedContacts = [];
+    renderDbValidatedContactsPreview();
+    showResult(error, true);
+    notify(extractErrorMessage(error, "Erro ao carregar contatos validados do banco."), "error");
+  }
+}
+
 function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
@@ -366,6 +469,12 @@ async function initCampaignPage() {
 }
 
 initCampaignPage();
+renderDbValidatedContactsPreview();
+updateCampaignSubmitAvailability();
+
+if (loadDbValidatedContactsBtn) {
+  loadDbValidatedContactsBtn.addEventListener("click", loadValidatedContactsForCampaign);
+}
 
 function showResult(data, isError = false) {
   resultElement.style.color = isError ? "#ffd1d1" : "#b9d7f4";
@@ -553,6 +662,18 @@ if (uploadMediaBtn) {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
+  if (!Array.isArray(dbValidatedContacts) || !dbValidatedContacts.length) {
+    notify("Busque e valide contatos no banco antes de rodar a campanha.", "warning");
+    showResult(
+      {
+        success: false,
+        error: "Nenhum contato validado carregado. Use o botao 'Buscar no banco e validar na Evolution'."
+      },
+      true
+    );
+    return;
+  }
+
   let integration = {};
   try {
     integration = await getIntegrationConfig();
@@ -579,6 +700,7 @@ form.addEventListener("submit", async (event) => {
   try {
     const fd = new FormData(form);
     const manualContacts = parseManualContacts(fd.get("manualContacts") || "");
+    const allContactsForCampaign = [...manualContacts, ...dbValidatedContacts];
     const messageVariations = getSelectedMessages();
 
     const confirmedSubmit = await confirmAction("Tem certeza que deseja subir esta campanha?");
@@ -626,7 +748,7 @@ form.addEventListener("submit", async (event) => {
     const payload = new FormData();
     payload.append("config", JSON.stringify(integration));
     payload.append("campaign", JSON.stringify(campaign));
-    payload.append("contacts", JSON.stringify(manualContacts));
+    payload.append("contacts", JSON.stringify(allContactsForCampaign));
 
     const contactsFile = fd.get("contactsFile");
     if (contactsFile && contactsFile.size > 0) {

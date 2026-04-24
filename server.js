@@ -24,9 +24,9 @@ const PORT = process.env.PORT || 3000;
 const pgConfig = {
   host: process.env.PG_HOST || "209.126.86.132",
   port: Number(process.env.PG_PORT || 8902),
-  user: process.env.PG_USER || "Campanha",
+  user: process.env.PG_USER || "campanha",
   password: process.env.PG_PASSWORD || "&JwEpqC@I5haQ$FsXMqvaKSVYqxMNsED",
-  database: process.env.PG_DATABASE || "ScrapGoogle_campanha",
+  database: process.env.PG_DATABASE || "leads_google",
   ssl: parseBool(process.env.PG_SSL, false)
     ? {
         rejectUnauthorized: parseBool(process.env.PG_SSL_REJECT_UNAUTHORIZED, false)
@@ -576,6 +576,97 @@ app.get("/api/postgres/contacts/simple", async (req, res) => {
     return res.status(500).json({
       success: false,
       error: error.message || "Erro ao consultar contatos simplificados no PostgreSQL"
+    });
+  }
+});
+
+app.post("/api/campaign/contacts-from-db", async (req, res) => {
+  try {
+    const dbConfig = getIntegrationSettings();
+    const requestConfig = parseMaybeJson(req.body.config, req.body || {});
+    const config = {
+      ...dbConfig,
+      ...requestConfig
+    };
+
+    const payload = parseMaybeJson(req.body.filters, req.body || {});
+    const segment = String(payload.segment || "recic").trim() || "recic";
+    const limit = parsePositiveInt(payload.limit, 500, 1, 5000);
+
+    if (!config.evolutionUrl || !config.evolutionInstance) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Configure Evolution URL e Instance na pagina Integracoes antes de buscar contatos validados."
+      });
+    }
+
+    const rows = await queryCampaignContactsFromPostgres({ segment, limit });
+    const mappedContacts = rows
+      .map((row) => ({
+        number: onlyDigits(row.numero),
+        name: String(row.nome || "").trim(),
+        segmento: String(row.segmento || "").trim(),
+        localidade: String(row.localidade || "").trim(),
+        avaliacao: row.avaliacao,
+        urlGoogle: String(row.url_google || "").trim(),
+        validatedWhatsapp: true
+      }))
+      .filter((contact) => Boolean(contact.number));
+
+    const dedupMap = new Map();
+    mappedContacts.forEach((contact) => {
+      if (!dedupMap.has(contact.number)) {
+        dedupMap.set(contact.number, contact);
+      }
+    });
+
+    const dedupContacts = Array.from(dedupMap.values());
+    if (!dedupContacts.length) {
+      return res.json({
+        success: true,
+        filters: { segment, limit },
+        totals: {
+          fromDatabase: 0,
+          uniqueNumbers: 0,
+          validatedOnEvolution: 0,
+          filteredOut: 0
+        },
+        contacts: [],
+        evolution: null
+      });
+    }
+
+    const numbers = dedupContacts.map((contact) => contact.number);
+    const evolutionResult = await validateNumbersOnEvolution({
+      evolutionUrl: config.evolutionUrl,
+      evolutionApiKey: config.evolutionApiKey,
+      evolutionInstance: config.evolutionInstance,
+      numbers
+    });
+
+    const validSet = new Set(evolutionResult.validatedNumbers);
+    const validatedContacts = dedupContacts.filter((contact) => validSet.has(contact.number));
+
+    return res.json({
+      success: true,
+      filters: { segment, limit },
+      totals: {
+        fromDatabase: mappedContacts.length,
+        uniqueNumbers: dedupContacts.length,
+        validatedOnEvolution: validatedContacts.length,
+        filteredOut: dedupContacts.length - validatedContacts.length
+      },
+      contacts: validatedContacts,
+      evolution: {
+        endpoint: evolutionResult.endpoint,
+        totalRetornado: evolutionResult.validatedNumbers.length
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Erro ao buscar contatos validados no banco"
     });
   }
 });
